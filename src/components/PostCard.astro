@@ -1,0 +1,36 @@
+---
+import PostCover from './PostCover.astro';
+import { formatDate, postPath, type BlogPost } from '../lib/blog';
+import { t } from '../i18n/ui';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  post: BlogPost;
+  lang: Lang;
+  index?: number;
+}
+
+const { post, lang, index = 0 } = Astro.props;
+const copy = t(lang);
+const slug = post.id.replace(/^(en|es)\//, '');
+---
+
+<article class="post-card" data-reveal style={`--i: ${index};`}>
+  <a class="post-card__media" href={postPath(post)} tabindex="-1" aria-hidden="true">
+    <PostCover slug={slug} tags={post.data.tags} />
+  </a>
+  <div class="post-card__body">
+    <p class="post-card__meta">
+      <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate, lang)}</time>
+      <span aria-hidden="true">//</span>
+      <span>{post.data.tags.join(' · ')}</span>
+    </p>
+    <h3 class="post-card__title">
+      <a href={postPath(post)}>{post.data.title}</a>
+    </h3>
+    <p class="post-card__desc">{post.data.description}</p>
+    <a class="post-card__read" href={postPath(post)}>
+      {copy.common.readMore} <span aria-hidden="true">→</span>
+    </a>
+  </div>
+</article>

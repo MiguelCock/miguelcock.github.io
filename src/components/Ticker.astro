@@ -1,0 +1,19 @@
+---
+interface Props {
+  items: string[];
+}
+
+const { items } = Astro.props;
+const line = [...items, ...items];
+---
+
+<div class="ticker" aria-hidden="true">
+  <div class="ticker__track">
+    {line.map((item, index) => (
+      <span class="ticker__item">
+        {index > 0 && <span class="ticker__sep">//</span>}
+        {item}
+      </span>
+    ))}
+  </div>
+</div>

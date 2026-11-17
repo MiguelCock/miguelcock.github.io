@@ -1,0 +1,96 @@
+---
+import { Image } from 'astro:assets';
+import ProjectCover from './ProjectCover.astro';
+import type { Project } from '../data/projects';
+import { t } from '../i18n/ui';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  project: Project;
+  lang: Lang;
+}
+
+const { project, lang } = Astro.props;
+const copy = t(lang);
+const gallery = project.gallery?.[0];
+const caseStudy = project.caseStudy?.[lang];
+
+const labels = {
+  en: { featured: 'Featured case study', role: 'Role', period: 'Period' },
+  es: { featured: 'Caso de estudio destacado', role: 'Rol', period: 'Periodo' },
+}[lang];
+---
+
+<article class="featured-project" data-reveal style={`--accent: ${project.accent};`}>
+  <div class="featured-project__media">
+    {project.image ? (
+      <Image
+        class="featured-project__main"
+        src={project.image}
+        alt={project.imageAlt?.[lang] ?? project.name}
+        widths={[640, 960, 1280]}
+        sizes="(max-width: 900px) 100vw, 620px"
+        loading="lazy"
+      />
+    ) : (
+      <ProjectCover project={project} lang={lang} />
+    )}
+    {gallery && (
+      <div class="featured-project__thumb" aria-hidden="true">
+        <Image
+          src={gallery.image}
+          alt={gallery.alt[lang]}
+          widths={[240, 420]}
+          sizes="220px"
+          loading="lazy"
+        />
+      </div>
+    )}
+    <span class="featured-project__scan" aria-hidden="true"></span>
+    <span class="featured-project__stamp" aria-hidden="true">
+      001 / FLAGSHIP
+    </span>
+  </div>
+
+  <div class="featured-project__body">
+    <p class="eyebrow">
+      <span class="eyebrow__mark">//</span> {labels.featured} · {project.period}
+    </p>
+    <h3 class="featured-project__title">
+      {project.name}
+      <span class="accent">.</span>
+    </h3>
+    <p class="featured-project__tagline">{project.tagline[lang]}</p>
+    <p class="featured-project__desc">{project.description[lang]}</p>
+
+    <dl class="featured-project__meta">
+      <div>
+        <dt>{labels.role}</dt>
+        <dd>{project.role[lang]}</dd>
+      </div>
+      <div>
+        <dt>{labels.period}</dt>
+        <dd>{project.period}</dd>
+      </div>
+    </dl>
+
+    <ul class="tags" aria-label={copy.common.stack}>
+      {project.stack.map((item) => (
+        <li class="tag">{item}</li>
+      ))}
+    </ul>
+
+    <div class="featured-project__links">
+      {caseStudy && (
+        <a class="btn btn--primary" href={caseStudy}>
+          {copy.common.readMore} <span aria-hidden="true">→</span>
+        </a>
+      )}
+      {project.repo && (
+        <a class="btn" href={project.repo} target="_blank" rel="noopener noreferrer">
+          {copy.common.repo} <span aria-hidden="true">↗</span>
+        </a>
+      )}
+    </div>
+  </div>
+</article>

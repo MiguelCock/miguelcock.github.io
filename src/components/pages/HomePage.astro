@@ -1,11 +1,16 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Terminal from '../Terminal.astro';
+import HeroScene from '../HeroScene.astro';
+import Ticker from '../Ticker.astro';
 import SectionHeading from '../SectionHeading.astro';
+import FeaturedProject from '../FeaturedProject.astro';
 import ProjectCard from '../ProjectCard.astro';
+import PostCard from '../PostCard.astro';
+import StatusBento from '../home/StatusBento.astro';
 import { featuredProjects } from '../../data/projects';
 import { profile } from '../../data/profile';
-import { formatDate, getPosts, postPath } from '../../lib/blog';
+import { getPosts } from '../../lib/blog';
 import { route } from '../../i18n/ui';
 import type { Lang } from '../../i18n/ui';
 
@@ -16,6 +21,22 @@ interface Props {
 const { lang } = Astro.props;
 const alternatePath = lang === 'en' ? '/es/' : '/';
 const posts = (await getPosts(lang)).slice(0, 2);
+const [flagship, ...restFeatured] = featuredProjects;
+
+const tickerItems = [
+  'PYTHON',
+  'TYPESCRIPT',
+  'C3',
+  'RUST',
+  'FLUTTER',
+  'LUA',
+  'REACT',
+  'AWS',
+  'TERRAFORM',
+  'FASTAPI',
+  'RAYLIB',
+  'LÖVE2D',
+];
 
 const copy = {
   en: {
@@ -24,7 +45,6 @@ const copy = {
       'Cybersecurity engineer and full-stack developer in Medellín. I build security tooling, accessible navigation software, and the occasional game.',
     eyebrow: 'hello, world',
     note: 'Open to full-stack roles · Medellín, CO',
-    nowLabel: './now.sh',
     featuredEyebrow: '01 · selected work',
     featuredTitle: "Things I've built",
     latestEyebrow: '02 · writing',
@@ -38,6 +58,8 @@ const copy = {
     linkedin: 'LinkedIn',
     viewProjects: 'View projects',
     readBlog: 'Read the blog',
+    allProjects: 'All projects',
+    allPosts: 'All posts',
   },
   es: {
     title: 'Miguel Cock — Ingeniero en ciberseguridad y desarrollador full stack',
@@ -45,7 +67,6 @@ const copy = {
       'Ingeniero en ciberseguridad y desarrollador full stack en Medellín. Construyo herramientas de seguridad, software de navegación accesible y algún videojuego de vez en cuando.',
     eyebrow: 'hola, mundo',
     note: 'Abierto a roles full stack · Medellín, CO',
-    nowLabel: './ahora.sh',
     featuredEyebrow: '01 · trabajo seleccionado',
     featuredTitle: 'Cosas que he construido',
     latestEyebrow: '02 · escritura',
@@ -59,6 +80,8 @@ const copy = {
     linkedin: 'LinkedIn',
     viewProjects: 'Ver proyectos',
     readBlog: 'Leer el blog',
+    allProjects: 'Todos los proyectos',
+    allPosts: 'Todas las entradas',
   },
 };
 
@@ -69,6 +92,7 @@ const projectsRoute = route(lang, 'projects');
 
 <BaseLayout lang={lang} title={c.title} description={c.description} alternatePath={alternatePath}>
   <section class="hero">
+    <HeroScene />
     <div class="container hero__inner">
       <div class="hero__copy">
         <p class="eyebrow">
@@ -92,25 +116,20 @@ const projectsRoute = route(lang, 'projects');
           </a>
         </div>
         <p class="hero__note">{c.note}</p>
-
-        <dl class="stats">
-          {profile.stats.map((stat) => (
-            <div class="stat">
-              <dt>{stat.label[lang]}</dt>
-              <dd>{stat.value[lang]}</dd>
-            </div>
-          ))}
-        </dl>
       </div>
 
       <Terminal lang={lang} alternatePath={alternatePath} />
     </div>
   </section>
 
-  <section class="now" aria-label={c.nowLabel}>
-    <div class="container now__inner">
-      <span class="now__label">{c.nowLabel}</span>
-      <p>{profile.now[lang]}</p>
+  <Ticker items={tickerItems} />
+
+  <section
+    class="section section--bento"
+    aria-label={lang === 'en' ? 'System status' : 'Estado del sistema'}
+  >
+    <div class="container">
+      <StatusBento lang={lang} latestPost={posts[0]} />
     </div>
   </section>
 
@@ -118,41 +137,33 @@ const projectsRoute = route(lang, 'projects');
     <div class="container">
       <SectionHeading
         eyebrow={c.featuredEyebrow}
+        index="01"
         title={c.featuredTitle}
         link={projectsRoute}
-        linkLabel={lang === 'en' ? 'All projects' : 'Todos los proyectos'}
+        linkLabel={c.allProjects}
       />
-      <div class="project-grid">
-        {featuredProjects.map((project, index) => (
-          <ProjectCard project={project} lang={lang} index={index} />
+      {flagship && <FeaturedProject project={flagship} lang={lang} />}
+      <div class="project-grid project-grid--three">
+        {restFeatured.map((project, index) => (
+          <ProjectCard project={project} lang={lang} index={index + 1} />
         ))}
       </div>
     </div>
   </section>
 
-  <section class="section">
+  <section class="section section--amber">
     <div class="container">
       <SectionHeading
         eyebrow={c.latestEyebrow}
+        index="02"
         title={c.latestTitle}
         link={blogRoute}
-        linkLabel={lang === 'en' ? 'All posts' : 'Todas las entradas'}
+        linkLabel={c.allPosts}
       />
       {posts.length > 0 ? (
-        <div class="post-list">
-          {posts.map((post) => (
-            <a class="post-row" href={postPath(post)}>
-              <time class="post-row__date" datetime={post.data.pubDate.toISOString()}>
-                {formatDate(post.data.pubDate, lang)}
-              </time>
-              <div>
-                <h3 class="post-row__title">{post.data.title}</h3>
-                <p class="post-row__desc">{post.data.description}</p>
-              </div>
-              <span class="post-row__arrow" aria-hidden="true">
-                →
-              </span>
-            </a>
+        <div class="post-grid">
+          {posts.map((post, index) => (
+            <PostCard post={post} lang={lang} index={index} />
           ))}
         </div>
       ) : (

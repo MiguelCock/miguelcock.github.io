@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { formatDate, getPosts, postPath } from '../../lib/blog';
+import PostCard from '../PostCard.astro';
+import { getPosts } from '../../lib/blog';
 import type { Lang } from '../../i18n/ui';
 
 interface Props {
@@ -21,6 +22,7 @@ const copy = {
     intro:
       'Things I learn while building. Long enough to be useful, short enough to finish. Every post exists in English and Spanish.',
     empty: 'The first post is still in the oven. Check back soon.',
+    posts: 'posts',
   },
   es: {
     title: 'Blog — Miguel Cock',
@@ -31,6 +33,7 @@ const copy = {
     intro:
       'Cosas que aprendo mientras construyo. Suficientemente largas para ser útiles, suficientemente cortas para terminar. Cada entrada existe en inglés y español.',
     empty: 'La primera entrada todavía está en el horno. Vuelve pronto.',
+    posts: 'entradas',
   },
 };
 
@@ -38,7 +41,7 @@ const c = copy[lang];
 ---
 
 <BaseLayout lang={lang} title={c.title} description={c.description} alternatePath={alternatePath}>
-  <section class="page-hero">
+  <section class="page-hero section--amber">
     <div class="container">
       <p class="eyebrow">
         <span class="eyebrow__mark">//</span> {c.eyebrow}
@@ -50,7 +53,7 @@ const c = copy[lang];
       <p class="page-hero__copy">{c.intro}</p>
       <p class="page-hero__meta">
         <span>
-          {posts.length} {lang === 'en' ? 'posts' : 'entradas'}
+          {posts.length} {c.posts}
         </span>
         <span aria-hidden="true">·</span>
         <span>EN / ES</span>
@@ -58,28 +61,12 @@ const c = copy[lang];
     </div>
   </section>
 
-  <section class="section section--tight">
+  <section class="section section--tight section--amber">
     <div class="container">
       {posts.length > 0 ? (
-        <div class="post-list">
-          {posts.map((post) => (
-            <a class="post-row" href={postPath(post)}>
-              <time class="post-row__date" datetime={post.data.pubDate.toISOString()}>
-                {formatDate(post.data.pubDate, lang)}
-              </time>
-              <div>
-                <h2 class="post-row__title">{post.data.title}</h2>
-                <p class="post-row__desc">{post.data.description}</p>
-                <ul class="tags" aria-label={lang === 'en' ? 'Tags' : 'Etiquetas'}>
-                  {post.data.tags.map((tag) => (
-                    <li class="tag">{tag}</li>
-                  ))}
-                </ul>
-              </div>
-              <span class="post-row__arrow" aria-hidden="true">
-                →
-              </span>
-            </a>
+        <div class="post-grid">
+          {posts.map((post, index) => (
+            <PostCard post={post} lang={lang} index={index} />
           ))}
         </div>
       ) : (

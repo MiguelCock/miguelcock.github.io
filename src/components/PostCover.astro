@@ -1,0 +1,117 @@
+---
+interface Props {
+  slug: string;
+  tags: string[];
+}
+
+const { slug } = Astro.props;
+const isGps = slug.includes('gps');
+const isFlecs = slug.includes('flecs');
+const accent = isGps ? '#5df2a5' : isFlecs ? '#b388ff' : '#ffcc66';
+---
+
+<div class="post-cover" style={`--accent: ${accent};`}>
+  <svg
+    class="post-cover__art"
+    viewBox="0 0 640 400"
+    role="img"
+    aria-label="Abstract cover art for this post"
+    preserveAspectRatio="xMidYMid slice"
+  >
+    {isGps && (
+      <g fill="none" stroke="var(--accent)" stroke-width="1.7">
+        <path
+          d="M-20 294 C70 210 154 332 238 250 C322 168 398 292 486 220 C550 168 604 202 660 160"
+          opacity="0.34"
+        />
+        <path
+          d="M-20 330 C70 246 154 368 238 286 C322 204 398 328 486 256 C550 204 604 238 660 196"
+          opacity="0.22"
+        />
+        <path
+          d="M-20 258 C70 174 154 296 238 214 C322 132 398 256 486 184 C550 132 604 166 660 124"
+          opacity="0.16"
+        />
+        <path
+          d="M118 300 C168 264 212 268 252 224 C292 180 338 178 378 208 C418 238 460 232 504 186"
+          stroke-dasharray="5 7"
+          opacity="0.8"
+        />
+        <circle cx="118" cy="300" r="7" fill="var(--accent)" stroke="none" />
+        <circle cx="252" cy="224" r="5" fill="var(--accent)" stroke="none" />
+        <circle cx="378" cy="208" r="5" fill="var(--accent)" stroke="none" />
+        <circle cx="504" cy="186" r="7" fill="var(--accent)" stroke="none" />
+        <path d="M118 282 V252 M252 206 V182 M378 190 V164 M504 168 V138" opacity="0.35" />
+        <path d="M504 118 V98 M504 88 V84" opacity="0.6" />
+        <text class="cover__svg-label" x="56" y="64">
+          GPS / 3.2 M → 0.4 M
+        </text>
+        <text class="cover__svg-label" x="470" y="352">
+          ANCHOR 04
+        </text>
+      </g>
+    )}
+
+    {!isGps && !isFlecs && (
+      <g fill="none" stroke="var(--accent)" stroke-width="1.7">
+        <path
+          d="M56 230 C106 190 156 270 206 230 C256 190 306 270 356 230 C406 190 456 270 506 230 C536 206 566 226 584 214"
+          opacity="0.55"
+        />
+        <path
+          d="M56 264 C106 224 156 304 206 264 C256 224 306 304 356 264 C406 224 456 304 506 264 C536 240 566 260 584 248"
+          opacity="0.28"
+        />
+        <circle cx="206" cy="230" r="4" fill="var(--accent)" stroke="none" />
+        <circle cx="356" cy="230" r="4" fill="var(--accent)" stroke="none" />
+        <text class="cover__svg-label" x="56" y="64">
+          TRANSMISSION
+        </text>
+      </g>
+    )}
+
+    {isFlecs && (
+      <g fill="none" stroke="var(--accent)" stroke-width="1.6">
+        {Array.from({ length: 9 }, (_, x) =>
+          Array.from({ length: 5 }, (_, y) => {
+            const filled =
+              (x === 2 && y === 1) ||
+              (x === 5 && y === 2) ||
+              (x === 6 && y === 4) ||
+              (x === 7 && y === 0);
+            return (
+              <rect
+                x={82 + x * 54}
+                y={98 + y * 44}
+                width="22"
+                height="22"
+                fill={filled ? 'var(--accent)' : 'transparent'}
+                opacity={filled ? 0.7 : 0.2}
+              />
+            );
+          }),
+        ).flat()}
+        <path
+          d="M190 142 L352 186 M406 186 L460 118 M298 230 L352 274 M460 142 L514 274"
+          stroke-dasharray="4 6"
+          opacity="0.6"
+        />
+        <circle cx="190" cy="142" r="6" fill="var(--accent)" />
+        <circle cx="352" cy="186" r="6" fill="var(--accent)" />
+        <circle cx="460" cy="118" r="6" fill="var(--accent)" />
+        <circle cx="352" cy="274" r="6" fill="var(--accent)" />
+        <circle cx="514" cy="274" r="6" fill="var(--accent)" />
+        <path d="M72 326 H568" opacity="0.22" />
+        <text class="cover__svg-label" x="56" y="64">
+          ECS / FLECS 4.1.6
+        </text>
+        <text class="cover__svg-label" x="430" y="352">
+          QUERY INFERRED
+        </text>
+      </g>
+    )}
+  </svg>
+  <span class="post-cover__tag" aria-hidden="true">
+    transmission
+  </span>
+</div>

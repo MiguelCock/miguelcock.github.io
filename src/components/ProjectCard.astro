@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import ProjectCover from './ProjectCover.astro';
 import type { Project } from '../data/projects';
 import { t } from '../i18n/ui';
 import type { Lang } from '../i18n/ui';
@@ -13,12 +14,33 @@ interface Props {
 const { project, lang, index = 0 } = Astro.props;
 const copy = t(lang);
 const repo = project.repo;
+const caseStudy = project.caseStudy?.[lang];
+const gallery = project.gallery?.[0];
+const indexLabel = String(index + 1).padStart(3, '0');
+const search = [
+  indexLabel,
+  project.name,
+  project.role[lang],
+  project.tagline[lang],
+  project.description[lang],
+  project.stack.join(' '),
+  project.tags.join(' '),
+]
+  .join(' ')
+  .toLowerCase();
+
+const notes = {
+  en: { label: 'Case notes', role: 'Role', period: 'Period', work: 'What I did' },
+  es: { label: 'Notas del caso', role: 'Rol', period: 'Periodo', work: 'Qué hice' },
+}[lang];
 ---
 
 <article
   class="project-card"
   data-reveal
+  data-project-card
   data-tags={project.tags.join(' ')}
+  data-search={search}
   style={`--accent: ${project.accent}; --i: ${index};`}
 >
   <div class="project-card__bar">
@@ -27,9 +49,28 @@ const repo = project.repo;
       <i></i>
       <i></i>
     </span>
-    <span class="project-card__file">{project.slug}.md</span>
+    <span class="project-card__file">
+      {indexLabel} · {project.slug}.md
+    </span>
     <span class="project-card__period">{project.period}</span>
   </div>
+
+  {repo ? (
+    <a
+      class="project-card__media"
+      href={repo}
+      target="_blank"
+      rel="noopener noreferrer"
+      tabindex="-1"
+      aria-hidden="true"
+    >
+      <ProjectCover project={project} lang={lang} />
+    </a>
+  ) : (
+    <div class="project-card__media">
+      <ProjectCover project={project} lang={lang} />
+    </div>
+  )}
 
   <div class="project-card__body">
     <div class="project-card__head">
@@ -50,31 +91,6 @@ const repo = project.repo;
       </div>
     </div>
 
-    {project.image ? (
-      <a
-        class="project-card__media"
-        href={repo}
-        target="_blank"
-        rel="noopener noreferrer"
-        tabindex="-1"
-        aria-hidden="true"
-      >
-        <Image
-          src={project.image}
-          alt={project.imageAlt?.[lang] ?? project.name}
-          widths={[480, 800]}
-          sizes="(max-width: 760px) 100vw, 50vw"
-          loading="lazy"
-        />
-      </a>
-    ) : (
-      <div class="project-card__media project-card__media--placeholder" aria-hidden="true">
-        <span class="project-card__placeholder-glyph">{project.glyph}</span>
-        <span class="project-card__placeholder-stack">{project.stack.slice(0, 3).join(' · ')}</span>
-        <span class="project-card__placeholder-prompt">$ ./run</span>
-      </div>
-    )}
-
     <p class="project-card__tagline">{project.tagline[lang]}</p>
     <p class="project-card__desc">{project.description[lang]}</p>
 
@@ -84,12 +100,51 @@ const repo = project.repo;
       ))}
     </ul>
 
-    {repo && (
-      <div class="project-card__links">
+    <div class="project-card__links">
+      {repo && (
         <a href={repo} target="_blank" rel="noopener noreferrer">
           {copy.common.repo} <span aria-hidden="true">↗</span>
         </a>
-      </div>
-    )}
+      )}
+      {caseStudy && <a href={caseStudy}>{copy.common.readMore} →</a>}
+    </div>
   </div>
+
+  <details class="case-notes">
+    <summary>
+      <span class="case-notes__plus" aria-hidden="true">
+        +
+      </span>
+      {notes.label}
+    </summary>
+    <div class="case-notes__body">
+      <dl class="case-notes__meta">
+        <div>
+          <dt>{notes.role}</dt>
+          <dd>{project.role[lang]}</dd>
+        </div>
+        <div>
+          <dt>{notes.period}</dt>
+          <dd>{project.period}</dd>
+        </div>
+      </dl>
+      <p class="case-notes__label">{notes.work}</p>
+      <ul class="case-notes__list">
+        {project.highlights[lang].map((item) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+      {gallery && (
+        <div class="case-notes__gallery">
+          <Image
+            src={gallery.image}
+            alt={gallery.alt[lang]}
+            widths={[320, 640]}
+            sizes="(max-width: 760px) 100vw, 420px"
+            loading="lazy"
+          />
+        </div>
+      )}
+    </div>
+  </details>
 </article>

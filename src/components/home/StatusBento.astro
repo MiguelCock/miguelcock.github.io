@@ -1,0 +1,141 @@
+---
+import type { BlogPost } from '../../lib/blog';
+import { formatDate, postPath } from '../../lib/blog';
+import { profile } from '../../data/profile';
+import { projects } from '../../data/projects';
+import type { Lang } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  latestPost?: BlogPost;
+}
+
+const { lang, latestPost } = Astro.props;
+
+const copy = {
+  en: {
+    status: 'status.json',
+    stack: 'cat stack.txt',
+    latest: 'tail latest.log',
+    now: 'currently.sh',
+    uptime: 'uptime',
+    online: 'online',
+    available: 'Open to full-stack roles · Medellín',
+    read: 'Read the latest',
+    noPost: 'No transmissions yet.',
+    since: 'since Jan 2025',
+    degree: 'MSc · 2026–27',
+    shipped: 'projects shipped',
+    latestLabel: 'Latest transmission',
+  },
+  es: {
+    status: 'estado.json',
+    stack: 'cat pila.txt',
+    latest: 'tail ultima.log',
+    now: 'ahora.sh',
+    uptime: 'uptime',
+    online: 'en línea',
+    available: 'Abierto a roles full stack · Medellín',
+    read: 'Leer la última',
+    noPost: 'Aún no hay transmisiones.',
+    since: 'desde ene 2025',
+    degree: 'Maestría · 2026–27',
+    shipped: 'proyectos publicados',
+    latestLabel: 'Última transmisión',
+  },
+};
+
+const c = copy[lang];
+const stack = profile.skills
+  .flatMap((group) => group.items)
+  .filter((item, index, all) => all.indexOf(item) === index)
+  .slice(0, 14);
+---
+
+<div class="bento">
+  <article
+    class="bento__card bento__card--status"
+    data-reveal
+    style="--accent: var(--green); --i: 0"
+  >
+    <div class="bento__head">
+      <span class="bento__label">// {c.status}</span>
+      <span class="bento__online">
+        <i></i>
+        {c.online}
+      </span>
+    </div>
+    <p class="bento__role">{profile.role[lang]}</p>
+    <p class="bento__place">{profile.location[lang]}</p>
+    <p class="bento__available">● {c.available}</p>
+    <a class="bento__mail" href={`mailto:${profile.email}`}>
+      {profile.email}
+    </a>
+  </article>
+
+  <article class="bento__card bento__card--stack" data-reveal style="--accent: var(--cyan); --i: 1">
+    <div class="bento__head">
+      <span class="bento__label">// {c.stack}</span>
+    </div>
+    <div class="chips">
+      {stack.map((item) => (
+        <span class="chip">{item}</span>
+      ))}
+    </div>
+  </article>
+
+  <article
+    class="bento__card bento__card--latest"
+    data-reveal
+    style="--accent: var(--amber); --i: 2"
+  >
+    <div class="bento__head">
+      <span class="bento__label">// {c.latest}</span>
+    </div>
+    {latestPost ? (
+      <>
+        <p class="bento__date">
+          {c.latestLabel} · {formatDate(latestPost.data.pubDate, lang)}
+        </p>
+        <a class="bento__post" href={postPath(latestPost)}>
+          {latestPost.data.title}
+          <span aria-hidden="true">→</span>
+        </a>
+        <p class="bento__post-desc">{latestPost.data.description}</p>
+      </>
+    ) : (
+      <p class="bento__post-desc">{c.noPost}</p>
+    )}
+  </article>
+
+  <article class="bento__card bento__card--now" data-reveal style="--accent: var(--violet); --i: 3">
+    <div class="bento__head">
+      <span class="bento__label">// {c.now}</span>
+    </div>
+    <p class="bento__now">{profile.now[lang]}</p>
+  </article>
+
+  <article
+    class="bento__card bento__card--uptime"
+    data-reveal
+    style="--accent: var(--pink); --i: 4"
+  >
+    <div class="bento__head">
+      <span class="bento__label">// {c.uptime}</span>
+    </div>
+    <dl class="bento__stats">
+      <div>
+        <dt>Exfil Security</dt>
+        <dd>{c.since}</dd>
+      </div>
+      <div>
+        <dt>EAFIT</dt>
+        <dd>{c.degree}</dd>
+      </div>
+      <div>
+        <dt>{String(projects.length).padStart(2, '0')}</dt>
+        <dd>{c.shipped}</dd>
+      </div>
+    </dl>
+  </article>
+</div>

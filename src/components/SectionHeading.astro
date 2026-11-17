@@ -4,13 +4,19 @@ interface Props {
   title: string;
   link?: string;
   linkLabel?: string;
+  index?: string;
 }
 
-const { eyebrow, title, link, linkLabel } = Astro.props;
+const { eyebrow, title, link, linkLabel, index } = Astro.props;
 ---
 
 <div class="section-head">
-  <div>
+  <div class="section-head__copy">
+    {index && (
+      <span class="section-head__ghost" aria-hidden="true">
+        {index}
+      </span>
+    )}
     <p class="eyebrow">
       <span class="eyebrow__mark">//</span> {eyebrow}
     </p>

@@ -1,6 +1,8 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import SectionHeading from '../SectionHeading.astro';
+import avatar from '../../assets/avatar.png';
 import { profile } from '../../data/profile';
 import type { Lang } from '../../i18n/ui';
 
@@ -79,7 +81,7 @@ const langList = profile.languages
 ---
 
 <BaseLayout lang={lang} title={c.title} description={c.description} alternatePath={alternatePath}>
-  <section class="page-hero">
+  <section class="page-hero section--violet">
     <div class="container">
       <p class="eyebrow">
         <span class="eyebrow__mark">//</span> {c.eyebrow}
@@ -92,7 +94,7 @@ const langList = profile.languages
     </div>
   </section>
 
-  <section class="section section--tight">
+  <section class="section section--tight section--violet">
     <div class="container about-grid">
       <div class="about-copy">
         {c.bio.map((paragraph) => (
@@ -100,7 +102,23 @@ const langList = profile.languages
         ))}
       </div>
 
-      <aside class="about-aside" aria-label={c.asideTitle}>
+      <aside class="about-aside" aria-label={c.asideTitle} data-reveal>
+        <div class="about-aside__avatar">
+          <Image
+            src={avatar}
+            alt={
+              lang === 'en'
+                ? 'Pixel-art planet avatar of Miguel Cock'
+                : 'Avatar pixel-art de Miguel Cock'
+            }
+            width={132}
+            height={132}
+          />
+          <span class="about-aside__signal">
+            <i></i>
+            {lang === 'en' ? 'online' : 'en línea'}
+          </span>
+        </div>
         <div class="about-aside__bar">
           <span class="terminal__dots" aria-hidden="true">
             <i></i>
@@ -149,9 +167,9 @@ const langList = profile.languages
     </div>
   </section>
 
-  <section class="section">
+  <section class="section section--violet">
     <div class="container">
-      <SectionHeading eyebrow={c.experienceEyebrow} title={c.experienceTitle} />
+      <SectionHeading eyebrow={c.experienceEyebrow} index="01" title={c.experienceTitle} />
       <div class="timeline">
         {profile.experience.map((job) => (
           <article class="timeline__item" data-reveal>
@@ -180,9 +198,9 @@ const langList = profile.languages
     </div>
   </section>
 
-  <section class="section">
+  <section class="section section--violet">
     <div class="container">
-      <SectionHeading eyebrow={c.educationEyebrow} title={c.educationTitle} />
+      <SectionHeading eyebrow={c.educationEyebrow} index="02" title={c.educationTitle} />
       <div class="edu-grid">
         {profile.education.map((item) => (
           <article class="edu-card" data-reveal>
@@ -196,9 +214,9 @@ const langList = profile.languages
     </div>
   </section>
 
-  <section class="section">
+  <section class="section section--violet">
     <div class="container">
-      <SectionHeading eyebrow={c.skillsEyebrow} title={c.skillsTitle} />
+      <SectionHeading eyebrow={c.skillsEyebrow} index="03" title={c.skillsTitle} />
       <div class="skills-grid">
         {profile.skills.map((group) => (
           <div class="skill-group" data-reveal>
@@ -214,9 +232,9 @@ const langList = profile.languages
     </div>
   </section>
 
-  <section class="section">
+  <section class="section section--violet">
     <div class="container">
-      <SectionHeading eyebrow={c.credsEyebrow} title={c.credsTitle} />
+      <SectionHeading eyebrow={c.credsEyebrow} index="04" title={c.credsTitle} />
       <div class="creds-grid">
         {profile.certifications.map((cert) => (
           <article class="cred-card" data-reveal>

@@ -22,6 +22,11 @@ const copy = {
       'A mix of security tooling, full-stack products, systems programming in C3, and games. Everything links to its repository.',
     all: 'all',
     allProjects: 'All projects',
+    search: 'Search name, stack or keyword…',
+    projects: 'projects',
+    emptyTitle: 'grep: no matches',
+    emptyBody: 'Try a different keyword or clear the filters.',
+    reset: 'Reset filters',
   },
   es: {
     title: 'Proyectos — Miguel Cock',
@@ -33,6 +38,11 @@ const copy = {
       'Una mezcla de herramientas de seguridad, productos full stack, programación de sistemas en C3 y videojuegos. Todo enlaza a su repositorio.',
     all: 'todos',
     allProjects: 'Todos los proyectos',
+    search: 'Busca nombre, stack o palabra…',
+    projects: 'proyectos',
+    emptyTitle: 'grep: sin coincidencias',
+    emptyBody: 'Prueba otra palabra clave o limpia los filtros.',
+    reset: 'Limpiar filtros',
   },
 };
 
@@ -40,7 +50,7 @@ const c = copy[lang];
 ---
 
 <BaseLayout lang={lang} title={c.title} description={c.description} alternatePath={alternatePath}>
-  <section class="page-hero">
+  <section class="page-hero section--cyan">
     <div class="container">
       <p class="eyebrow">
         <span class="eyebrow__mark">//</span> {c.eyebrow}
@@ -58,67 +68,158 @@ const c = copy[lang];
     </div>
   </section>
 
-  <section class="section section--tight">
+  <section class="section section--tight section--cyan">
     <div class="container">
-      <div
-        class="filter-bar"
-        data-filter-bar
-        role="group"
-        aria-label={lang === 'en' ? 'Filter projects' : 'Filtrar proyectos'}
-      >
-        <button class="filter" type="button" data-filter="all" aria-pressed="true">
-          {c.all}
-        </button>
-        {projectTags.map((tag) => (
-          <button class="filter" type="button" data-filter={tag.id} aria-pressed="false">
-            {tag[lang]}
+      <div class="project-toolbar" data-project-toolbar>
+        <label class="project-search">
+          <span class="sr-only">{c.search}</span>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            aria-hidden="true"
+          >
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="M20 20l-3.5-3.5"></path>
+          </svg>
+          <input
+            type="search"
+            data-project-search
+            placeholder={c.search}
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <kbd aria-hidden="true">/</kbd>
+        </label>
+
+        <div
+          class="filter-bar"
+          data-filter-bar
+          role="group"
+          aria-label={lang === 'en' ? 'Filter projects' : 'Filtrar proyectos'}
+        >
+          <button class="filter" type="button" data-filter="all" aria-pressed="true">
+            {c.all}
           </button>
-        ))}
+          {projectTags.map((tag) => (
+            <button class="filter" type="button" data-filter={tag.id} aria-pressed="false">
+              {tag[lang]}
+            </button>
+          ))}
+        </div>
+
+        <p class="project-count" data-project-count aria-live="polite">
+          <b>{projects.length}</b> {c.projects}
+        </p>
       </div>
 
+      <h2 class="sr-only">{c.allProjects}</h2>
       <div class="project-grid" data-project-grid>
         {projects.map((project, index) => (
           <ProjectCard project={project} lang={lang} index={index} />
         ))}
+      </div>
+
+      <div class="project-empty" data-project-empty hidden>
+        <p class="project-empty__title">{c.emptyTitle}</p>
+        <p class="project-empty__body">{c.emptyBody}</p>
+        <button class="btn" type="button" data-reset-projects>
+          {c.reset}
+        </button>
       </div>
     </div>
   </section>
 </BaseLayout>
 
 <script>
-  function bootFilters(): void {
-    const bar = document.querySelector<HTMLElement>('[data-filter-bar]');
+  function bootProjectExplorer(): void {
+    const root = document.querySelector<HTMLElement>('[data-project-toolbar]');
     const grid = document.querySelector<HTMLElement>('[data-project-grid]');
-    if (!bar || !grid || bar.dataset.ready === 'true') return;
-    bar.dataset.ready = 'true';
+    if (!root || !grid || root.dataset.ready === 'true') return;
+    root.dataset.ready = 'true';
 
-    const buttons = Array.from(bar.querySelectorAll<HTMLButtonElement>('[data-filter]'));
-    const cards = Array.from(grid.querySelectorAll<HTMLElement>('[data-tags]'));
+    const search = root.querySelector<HTMLInputElement>('[data-project-search]');
+    const count = document.querySelector<HTMLElement>('[data-project-count] b');
+    const empty = document.querySelector<HTMLElement>('[data-project-empty]');
+    const reset = document.querySelector<HTMLButtonElement>('[data-reset-projects]');
+    const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-filter]'));
+    const cards = Array.from(grid.querySelectorAll<HTMLElement>('[data-project-card]'));
+    let activeFilter = 'all';
+
+    const apply = () => {
+      const term = (search?.value ?? '').trim().toLowerCase();
+      let shown = 0;
+
+      cards.forEach((card) => {
+        const tags = (card.dataset.tags ?? '').split(/\s+/);
+        const haystack = card.dataset.search ?? '';
+        const matchesFilter = activeFilter === 'all' || tags.includes(activeFilter);
+        const matchesTerm = term.length === 0 || haystack.includes(term);
+        const visible = matchesFilter && matchesTerm;
+        card.hidden = !visible;
+        if (visible) shown += 1;
+      });
+
+      if (count) count.textContent = String(shown).padStart(2, '0');
+      if (empty) empty.hidden = shown > 0;
+      grid.hidden = shown === 0;
+    };
 
     buttons.forEach((button) => {
       button.addEventListener('click', () => {
-        const filter = button.dataset.filter ?? 'all';
+        activeFilter = button.dataset.filter ?? 'all';
         buttons.forEach((candidate) => {
           candidate.setAttribute('aria-pressed', String(candidate === button));
         });
-        cards.forEach((card) => {
-          const tags = (card.dataset.tags ?? '').split(/\s+/);
-          const show = filter === 'all' || tags.includes(filter);
-          card.hidden = !show;
-          if (show) {
-            card.classList.remove('is-visible');
-            requestAnimationFrame(() => card.classList.add('is-visible'));
-          }
-        });
+        apply();
       });
     });
+
+    search?.addEventListener('input', apply);
+
+    const win = window as Window & { __mcProjectKeysBound?: boolean };
+    if (!win.__mcProjectKeysBound) {
+      win.__mcProjectKeysBound = true;
+      document.addEventListener('keydown', (event) => {
+        if (event.defaultPrevented) return;
+        const input = document.querySelector<HTMLInputElement>('[data-project-search]');
+        if (!input) return;
+        const target = event.target as HTMLElement | null;
+        const typing = target?.matches('input, textarea, select, [contenteditable="true"]');
+
+        if (event.key === '/' && !typing) {
+          event.preventDefault();
+          input.focus();
+          input.select();
+        }
+
+        if (event.key === 'Escape' && document.activeElement === input) {
+          input.value = '';
+          document.querySelector<HTMLButtonElement>('[data-filter="all"]')?.click();
+          input.blur();
+        }
+      });
+    }
+
+    reset?.addEventListener('click', () => {
+      if (search) search.value = '';
+      activeFilter = 'all';
+      buttons.forEach((button) => {
+        button.setAttribute('aria-pressed', String(button.dataset.filter === 'all'));
+      });
+      apply();
+      search?.focus();
+    });
+
+    apply();
   }
 
-  document.addEventListener('astro:page-load', bootFilters);
+  document.addEventListener('astro:page-load', bootProjectExplorer);
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', bootFilters, { once: true });
+    document.addEventListener('DOMContentLoaded', bootProjectExplorer, { once: true });
   } else {
-    bootFilters();
+    bootProjectExplorer();
   }
 </script>

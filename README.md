@@ -39,7 +39,9 @@ Requires Node **>= 22.23.4** (Astro 7). The GitHub Action uses Node 24.
 
 ```
 src/
-  components/        shared UI (Header, Footer, Terminal, ProjectCard, ...)
+  components/        shared UI (HeroScene, Terminal, Ticker, StatusBento,
+                     FeaturedProject, ProjectCard/ProjectCover,
+                     PostCard/PostCover, ...)
   components/pages/  full page bodies shared by the EN and ES routes
   content/blog/      Markdown posts: en/ and es/, paired via `translation`
   data/              profile.ts + projects.ts — the factual sources of truth
@@ -54,15 +56,23 @@ public/              favicon, robots.txt, og.png, og.svg (served as-is)
 
 ## Editing content
 
-- **Projects:** `src/data/projects.ts`. Add one object with `{ en, es }` copy, stack, tags, repo and
-  accent color. The project grid, filters and cards update automatically.
+- **Projects:** `src/data/projects.ts`. Add one object with `{ en, es }` copy, role, highlights,
+  stack, tags, repo, period and accent color. The home flagship, project grid, search and filters
+  update automatically. Covers are generated in `src/components/ProjectCover.astro` by slug; add a
+  motif there for a new project, or it falls back to the glyph.
 - **Profile, experience, education, skills:** `src/data/profile.ts`. Facts come from the private
   `MiguelCock/CV` repo; do not invent dates, metrics or roles.
 - **UI labels / terminal:** `src/i18n/ui.ts`, `src/i18n/terminal.ts`.
+- **Case notes:** inline `<details>` panels on each project card. `caseStudy` in the project data
+  links to a blog post when one exists. There are no separate project detail pages.
 - **Blog:** create the English post in `src/content/blog/en/<slug>.md` and the Spanish post in
   `src/content/blog/es/<slug-es>.md`. Set `translation` in each file to the other file's slug, e.g.
   `translation: corregir-gps-con-vision` ↔ `translation: correcting-gps-with-vision`. Use the same
   facts and structure in both. The schema is in `src/content.config.ts`.
+- **Blog covers:** generated in `src/components/PostCover.astro` from the post slug. Add a pattern
+  branch when a new post needs its own art.
+- **About avatar:** `src/assets/avatar.png` (GitHub avatar). Replace it with a real photo if the
+  user provides one; don't fabricate a portrait.
 - **Social image:** edit `public/og.svg` and regenerate the PNG:
 
   ```bash
@@ -87,9 +97,11 @@ curl -I https://miguelcock.github.io/
 
 ## Design
 
-Dark terminal aesthetic with game-dev accents: CRT scanlines, typed boot output, glitch hover,
-scroll reveals, filterable project cards and an interactive shell. Motion is CSS-only where possible
-and fully disabled under `prefers-reduced-motion`. Content remains visible without JavaScript.
+Dark terminal aesthetic with game-dev accents: an ambient canvas hero, CRT scanlines, typed boot
+output, glitch hover, scroll reveals, a marquee ticker, a bento status grid, custom SVG project
+covers, case-notes panels, filterable/searchable projects, post covers and an interactive shell.
+Motion is CSS-only where possible and fully disabled under `prefers-reduced-motion`. Content remains
+visible without JavaScript.
 
 The Konami code enables arcade mode. No sound, no tracking.
 

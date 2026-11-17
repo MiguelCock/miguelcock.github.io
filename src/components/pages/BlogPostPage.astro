@@ -1,6 +1,7 @@
 ---
 import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCover from '../PostCover.astro';
 import { formatDate, type BlogPost } from '../../lib/blog';
 import { route } from '../../i18n/ui';
 import type { Lang } from '../../i18n/ui';
@@ -15,6 +16,7 @@ interface Props {
 const { post, lang, alternatePath, hasTranslation } = Astro.props;
 const { Content } = await render(post);
 const blogRoute = route(lang, 'blog');
+const slug = post.id.replace(/^(en|es)\//, '');
 
 const copy = {
   en: {
@@ -40,6 +42,8 @@ const c = copy[lang];
   type="article"
   publishedTime={post.data.pubDate.toISOString()}
 >
+  <div class="reading-progress" data-reading-progress aria-hidden="true"></div>
+
   <article class="post">
     <div class="container">
       <header class="post__header">
@@ -58,7 +62,11 @@ const c = copy[lang];
         )}
       </header>
 
-      <div class="prose">
+      <div class="post__cover" aria-hidden="true">
+        <PostCover slug={slug} tags={post.data.tags} />
+      </div>
+
+      <div class="prose" data-prose>
         <Content />
       </div>
 
@@ -77,3 +85,45 @@ const c = copy[lang];
     </div>
   </article>
 </BaseLayout>
+
+<script>
+  function bootReadingProgress(): void {
+    const bar = document.querySelector<HTMLElement>('[data-reading-progress]');
+    if (!bar) return;
+
+    const win = window as Window & { __mcReadingBound?: boolean };
+    if (win.__mcReadingBound) return;
+    win.__mcReadingBound = true;
+
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const currentBar = document.querySelector<HTMLElement>('[data-reading-progress]');
+      const prose = document.querySelector<HTMLElement>('[data-prose]');
+      if (!currentBar || !prose) return;
+
+      const rect = prose.getBoundingClientRect();
+      const start = window.scrollY + rect.top;
+      const end = start + prose.offsetHeight - window.innerHeight * 0.35;
+      const progress = Math.min(1, Math.max(0, (window.scrollY - start) / (end - start)));
+      currentBar.style.transform = `scaleX(${progress})`;
+    };
+
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+  }
+
+  document.addEventListener('astro:page-load', bootReadingProgress);
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootReadingProgress, { once: true });
+  } else {
+    bootReadingProgress();
+  }
+</script>

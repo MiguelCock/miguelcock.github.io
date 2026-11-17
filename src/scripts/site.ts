@@ -99,6 +99,25 @@ function initNav(): void {
   }
 }
 
+function initSpotlights(): void {
+  if (window.matchMedia('(pointer: coarse)').matches) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  document.querySelectorAll<HTMLElement>('[data-project-card]').forEach((card) => {
+    if (card.dataset.spotlight === 'true') return;
+    card.dataset.spotlight = 'true';
+    card.addEventListener(
+      'pointermove',
+      (event) => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty('--mx', `${event.clientX - rect.left}px`);
+        card.style.setProperty('--my', `${event.clientY - rect.top}px`);
+      },
+      { passive: true },
+    );
+  });
+}
+
 function initCopyButtons(): void {
   document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((button) => {
     if (button.dataset.bound === 'true') return;
@@ -153,6 +172,7 @@ function initArcade(): void {
 function boot(): void {
   initReveal();
   initNav();
+  initSpotlights();
   initCopyButtons();
   initArcade();
 }

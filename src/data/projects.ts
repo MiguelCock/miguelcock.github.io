@@ -10,8 +10,11 @@ export interface Project {
   name: string;
   period: string;
   status: Localized;
+  role: Localized;
   tagline: Localized;
   description: Localized;
+  highlights: { en: string[]; es: string[] };
+  caseStudy?: Localized;
   stack: string[];
   tags: ProjectTag[];
   repo?: string;
@@ -29,6 +32,23 @@ export const projects: Project[] = [
     name: '4U',
     period: '2026',
     status: { en: 'Icesi contract', es: 'Contrato Icesi' },
+    role: {
+      en: 'Lead full-stack developer · Icesi contract',
+      es: 'Desarrollador full stack líder · Contrato Icesi',
+    },
+    highlights: {
+      en: [
+        'Led end-to-end development of the Flutter app and the FastAPI backend.',
+        'Coordinated seven services behind a single API gateway.',
+        'Implemented visual GPS correction and shipped to AWS EC2 with CI/CD.',
+      ],
+      es: [
+        'Lideré el desarrollo de extremo a extremo de la app Flutter y el backend FastAPI.',
+        'Coordiné siete servicios detrás de un único API gateway.',
+        'Implementé la corrección visual del GPS y desplegué en AWS EC2 con CI/CD.',
+      ],
+    },
+    caseStudy: { en: '/blog/correcting-gps-with-vision/', es: '/es/blog/corregir-gps-con-vision/' },
     tagline: {
       en: 'Accessible campus navigation with vision-corrected GPS',
       es: 'Navegación accesible en campus con GPS corregido por visión',
@@ -63,6 +83,19 @@ export const projects: Project[] = [
     name: 'TestTracker',
     period: '2026',
     status: { en: 'In development', es: 'En desarrollo' },
+    role: { en: 'Designer & developer', es: 'Diseñador y desarrollador' },
+    highlights: {
+      en: [
+        'Built a local-first Tauri 2 desktop app with React 19 and Rust.',
+        'Encrypted the vault with Argon2id and SQLCipher, and evidence per engagement.',
+        'Generates PDF, DOCX and XLSX reports and signs reviews with Ed25519.',
+      ],
+      es: [
+        'Construí una app de escritorio local-first con Tauri 2, React 19 y Rust.',
+        'Cifré la bóveda con Argon2id y SQLCipher, y la evidencia por compromiso.',
+        'Genera reportes PDF, DOCX y XLSX y firma revisiones con Ed25519.',
+      ],
+    },
     tagline: {
       en: 'A local-first workspace for penetration-testing engagements',
       es: 'Un espacio de trabajo local-first para proyectos de pentesting',
@@ -83,6 +116,19 @@ export const projects: Project[] = [
     name: 'yun',
     period: '2026',
     status: { en: 'Open source', es: 'Código abierto' },
+    role: { en: 'Creator', es: 'Creador' },
+    highlights: {
+      en: [
+        'A canvas-based IDE where files live as movable cards on an infinite grid.',
+        'tree-sitter highlighting for 30+ languages, plus LSP hover, definitions and completion.',
+        'Vim-inspired keyboard flow, project-wide search and a command palette.',
+      ],
+      es: [
+        'Un IDE basado en lienzo donde los archivos viven como tarjetas movibles en una grilla infinita.',
+        'Resaltado con tree-sitter para más de 30 lenguajes, además de LSP: hover, definiciones y autocompletado.',
+        'Flujo de teclado inspirado en Vim, búsqueda global y paleta de comandos.',
+      ],
+    },
     tagline: {
       en: 'A canvas-based code IDE written in C3',
       es: 'Un IDE basado en lienzo escrito en C3',
@@ -103,6 +149,19 @@ export const projects: Project[] = [
     name: 'FunctionalC3',
     period: '2026',
     status: { en: 'Open source', es: 'Código abierto' },
+    role: { en: 'Creator', es: 'Creador' },
+    highlights: {
+      en: [
+        'Adds map, filter, for_each, contains and more to C3 slices.',
+        'Uses compile-time generics and aliases in pure C3.',
+        'Published as an open-source C3 library.',
+      ],
+      es: [
+        'Agrega map, filter, for_each, contains y más a los slices de C3.',
+        'Usa genéricos y alias en tiempo de compilación, en C3 puro.',
+        'Publicada como librería open source de C3.',
+      ],
+    },
     tagline: {
       en: 'Functional programming extensions for C3',
       es: 'Extensiones de programación funcional para C3',
@@ -123,6 +182,20 @@ export const projects: Project[] = [
     name: 'flecsC3',
     period: '2026',
     status: { en: 'Open source', es: 'Código abierto' },
+    role: { en: 'Creator', es: 'Creador' },
+    highlights: {
+      en: [
+        'Idiomatic C3 bindings for the Flecs 4.1.6 entity component system.',
+        'Bundles the amalgamated Flecs C sources; no system-wide install.',
+        'Systems infer their query from the callback slice types at compile time.',
+      ],
+      es: [
+        'Bindings idiomáticos de C3 para el entity component system Flecs 4.1.6.',
+        'Incluye las fuentes C amalgamadas de Flecs; sin instalación global.',
+        'Los sistemas infieren su query a partir de los tipos de slice del callback.',
+      ],
+    },
+    caseStudy: { en: '/blog/flecs-bindings-for-c3/', es: '/es/blog/flecs-para-c3/' },
     tagline: {
       en: 'Idiomatic Flecs bindings for C3',
       es: 'Bindings idiomáticos de Flecs para C3',
@@ -143,6 +216,19 @@ export const projects: Project[] = [
     name: 'lua54.c3l',
     period: '2026',
     status: { en: 'Experimental', es: 'Experimental' },
+    role: { en: 'Creator', es: 'Creador' },
+    highlights: {
+      en: [
+        'A port of Lua 5.4 to C3, packaged as a C3 library.',
+        'Experimental and under active development.',
+        'Bridges the Lua C API into C3 types and modules.',
+      ],
+      es: [
+        'Un port de Lua 5.4 a C3, empaquetado como librería de C3.',
+        'Experimental y en desarrollo activo.',
+        'Conecta la API C de Lua con tipos y módulos de C3.',
+      ],
+    },
     tagline: {
       en: 'A Lua 5.4 runtime and binding for C3',
       es: 'Un runtime y binding de Lua 5.4 para C3',
@@ -163,6 +249,19 @@ export const projects: Project[] = [
     name: 'Lua Space',
     period: '2025',
     status: { en: 'Nova / EAFIT', es: 'Nova / EAFIT' },
+    role: { en: 'Scrum Master & developer', es: 'Scrum Master y desarrollador' },
+    highlights: {
+      en: [
+        'Built three co-op arcade games: Space Invaders, Tanks and Pong.',
+        'Used LÖVE2D with particle systems and GLSL shaders.',
+        'Scrum Master and developer in EAFIT’s Nova student group.',
+      ],
+      es: [
+        'Construí tres juegos arcade cooperativos: Space Invaders, Tanks y Pong.',
+        'Usé LÖVE2D con sistemas de partículas y shaders GLSL.',
+        'Scrum Master y desarrollador en el grupo estudiantil Nova de EAFIT.',
+      ],
+    },
     tagline: {
       en: 'A tiny solar system of co-op arcade games',
       es: 'Un pequeño sistema solar de juegos arcade cooperativos',
@@ -183,6 +282,19 @@ export const projects: Project[] = [
     name: 'wgpu_in_odin',
     period: '2026',
     status: { en: 'Learning project', es: 'Proyecto de aprendizaje' },
+    role: { en: 'Learning project', es: 'Proyecto de aprendizaje' },
+    highlights: {
+      en: [
+        'Implements the LearnWebGPU guide in the Odin language.',
+        'Explores WebGPU and WGSL from the graphics pipeline up.',
+        'A learning notebook, not a finished engine.',
+      ],
+      es: [
+        'Implementa la guía LearnWebGPU en el lenguaje Odin.',
+        'Explora WebGPU y WGSL desde el pipeline gráfico hacia arriba.',
+        'Un cuaderno de aprendizaje, no un motor terminado.',
+      ],
+    },
     tagline: {
       en: 'Following LearnWebGPU from scratch in Odin',
       es: 'Siguiendo LearnWebGPU desde cero en Odin',
