@@ -1,0 +1,186 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Terminal from '../Terminal.astro';
+import SectionHeading from '../SectionHeading.astro';
+import ProjectCard from '../ProjectCard.astro';
+import { featuredProjects } from '../../data/projects';
+import { profile } from '../../data/profile';
+import { formatDate, getPosts, postPath } from '../../lib/blog';
+import { route } from '../../i18n/ui';
+import type { Lang } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const alternatePath = lang === 'en' ? '/es/' : '/';
+const posts = (await getPosts(lang)).slice(0, 2);
+
+const copy = {
+  en: {
+    title: 'Miguel Cock — Cybersecurity engineer & full-stack developer',
+    description:
+      'Cybersecurity engineer and full-stack developer in Medellín. I build security tooling, accessible navigation software, and the occasional game.',
+    eyebrow: 'hello, world',
+    note: 'Open to full-stack roles · Medellín, CO',
+    nowLabel: './now.sh',
+    featuredEyebrow: '01 · selected work',
+    featuredTitle: "Things I've built",
+    latestEyebrow: '02 · writing',
+    latestTitle: 'Notes from the terminal',
+    latestEmpty: 'No transmissions yet. The first post is in the oven.',
+    contactEyebrow: '03 · contact',
+    contactTitle: "Let's build something",
+    contactBody:
+      'I am open to full-stack roles and interesting security work in Medellín. The fastest way to reach me is email.',
+    hello: 'Say hello',
+    linkedin: 'LinkedIn',
+    viewProjects: 'View projects',
+    readBlog: 'Read the blog',
+  },
+  es: {
+    title: 'Miguel Cock — Ingeniero en ciberseguridad y desarrollador full stack',
+    description:
+      'Ingeniero en ciberseguridad y desarrollador full stack en Medellín. Construyo herramientas de seguridad, software de navegación accesible y algún videojuego de vez en cuando.',
+    eyebrow: 'hola, mundo',
+    note: 'Abierto a roles full stack · Medellín, CO',
+    nowLabel: './ahora.sh',
+    featuredEyebrow: '01 · trabajo seleccionado',
+    featuredTitle: 'Cosas que he construido',
+    latestEyebrow: '02 · escritura',
+    latestTitle: 'Notas desde la terminal',
+    latestEmpty: 'Aún no hay transmisiones. La primera entrada está en el horno.',
+    contactEyebrow: '03 · contacto',
+    contactTitle: 'Construyamos algo',
+    contactBody:
+      'Estoy abierto a roles full stack y a trabajo de seguridad interesante en Medellín. La forma más rápida de contactarme es el correo.',
+    hello: 'Escríbeme',
+    linkedin: 'LinkedIn',
+    viewProjects: 'Ver proyectos',
+    readBlog: 'Leer el blog',
+  },
+};
+
+const c = copy[lang];
+const blogRoute = route(lang, 'blog');
+const projectsRoute = route(lang, 'projects');
+---
+
+<BaseLayout lang={lang} title={c.title} description={c.description} alternatePath={alternatePath}>
+  <section class="hero">
+    <div class="container hero__inner">
+      <div class="hero__copy">
+        <p class="eyebrow">
+          <span class="eyebrow__mark">//</span> {c.eyebrow}
+        </p>
+        <h1 class="hero__title glitch" data-text="Miguel Cock">
+          Miguel Cock
+          <span class="hero__cursor" aria-hidden="true">
+            _
+          </span>
+        </h1>
+        <p class="hero__role">{profile.role[lang]}</p>
+        <p class="hero__tagline">{profile.tagline[lang]}</p>
+
+        <div class="hero__actions">
+          <a class="btn btn--primary" href={projectsRoute}>
+            {c.viewProjects} <span aria-hidden="true">→</span>
+          </a>
+          <a class="btn" href={blogRoute}>
+            {c.readBlog}
+          </a>
+        </div>
+        <p class="hero__note">{c.note}</p>
+
+        <dl class="stats">
+          {profile.stats.map((stat) => (
+            <div class="stat">
+              <dt>{stat.label[lang]}</dt>
+              <dd>{stat.value[lang]}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+
+      <Terminal lang={lang} alternatePath={alternatePath} />
+    </div>
+  </section>
+
+  <section class="now" aria-label={c.nowLabel}>
+    <div class="container now__inner">
+      <span class="now__label">{c.nowLabel}</span>
+      <p>{profile.now[lang]}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <SectionHeading
+        eyebrow={c.featuredEyebrow}
+        title={c.featuredTitle}
+        link={projectsRoute}
+        linkLabel={lang === 'en' ? 'All projects' : 'Todos los proyectos'}
+      />
+      <div class="project-grid">
+        {featuredProjects.map((project, index) => (
+          <ProjectCard project={project} lang={lang} index={index} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <SectionHeading
+        eyebrow={c.latestEyebrow}
+        title={c.latestTitle}
+        link={blogRoute}
+        linkLabel={lang === 'en' ? 'All posts' : 'Todas las entradas'}
+      />
+      {posts.length > 0 ? (
+        <div class="post-list">
+          {posts.map((post) => (
+            <a class="post-row" href={postPath(post)}>
+              <time class="post-row__date" datetime={post.data.pubDate.toISOString()}>
+                {formatDate(post.data.pubDate, lang)}
+              </time>
+              <div>
+                <h3 class="post-row__title">{post.data.title}</h3>
+                <p class="post-row__desc">{post.data.description}</p>
+              </div>
+              <span class="post-row__arrow" aria-hidden="true">
+                →
+              </span>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <p class="muted">{c.latestEmpty}</p>
+      )}
+    </div>
+  </section>
+
+  <section class="section cta">
+    <div class="container cta__inner">
+      <div>
+        <p class="eyebrow">
+          <span class="eyebrow__mark">//</span> {c.contactEyebrow}
+        </p>
+        <h2 class="cta__title">
+          {c.contactTitle}
+          <span class="accent">.</span>
+        </h2>
+        <p class="cta__body">{c.contactBody}</p>
+      </div>
+      <div class="cta__actions">
+        <a class="btn btn--primary" href={`mailto:${profile.email}`}>
+          {c.hello}
+        </a>
+        <a class="btn" href={profile.linkedin} target="_blank" rel="noopener noreferrer">
+          {c.linkedin} <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

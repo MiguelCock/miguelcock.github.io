@@ -1,0 +1,86 @@
+---
+import { t, route } from '../i18n/ui';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  alternatePath: string;
+}
+
+const { lang, alternatePath } = Astro.props;
+const copy = t(lang);
+
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const isActive = (key: 'home' | 'projects' | 'about' | 'blog') => {
+  const target = route(lang, key).replace(/\/+$/, '') || '/';
+  if (key === 'home') return path === target;
+  return path === target || path.startsWith(`${target}/`);
+};
+
+const items = [
+  { key: 'home' as const, label: copy.nav.home, num: '01' },
+  { key: 'projects' as const, label: copy.nav.projects, num: '02' },
+  { key: 'about' as const, label: copy.nav.about, num: '03' },
+  { key: 'blog' as const, label: copy.nav.blog, num: '04' },
+];
+---
+
+<header class="site-header" data-header>
+  <div class="container header__inner">
+    <a class="brand" href={route(lang, 'home')} aria-label="miguel@medellin:~$ — Miguel Cock home">
+      <span class="brand__prompt">miguel@medellin</span>
+      <span class="brand__path">:~$</span>
+    </a>
+
+    <button
+      class="nav-toggle"
+      type="button"
+      data-nav-toggle
+      aria-expanded="false"
+      aria-controls="site-nav"
+      aria-label={copy.menu}
+    >
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <nav
+      class="site-nav"
+      id="site-nav"
+      data-nav
+      aria-label={lang === 'en' ? 'Main navigation' : 'Navegación principal'}
+    >
+      {items.map((item) => (
+        <a
+          class:list={['nav-link', { 'is-active': isActive(item.key) }]}
+          href={route(lang, item.key)}
+          aria-current={isActive(item.key) ? 'page' : undefined}
+        >
+          <span class="nav-link__num" aria-hidden="true">
+            {item.num}
+          </span>
+          {item.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="header__actions">
+      <a
+        class="lang-switch"
+        href={alternatePath}
+        hreflang={lang === 'en' ? 'es' : 'en'}
+        lang={lang === 'en' ? 'es' : 'en'}
+        aria-label={`${copy.languageShort} — ${copy.language}`}
+      >
+        <span class="lang-switch__bracket" aria-hidden="true">
+          [
+        </span>
+        <span>{copy.languageShort}</span>
+        <span class="lang-switch__bracket" aria-hidden="true">
+          ]
+        </span>
+      </a>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,55 @@
+---
+import { profile } from '../data/profile';
+import { t } from '../i18n/ui';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const copy = t(lang);
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container footer__grid">
+    <div>
+      <p class="footer__prompt">
+        <span class="prompt">miguel@medellin:~$</span> {copy.footer.exit}
+        <span class="hero__cursor">_</span>
+      </p>
+      <p class="footer__built">{copy.footer.built}</p>
+      <p class="footer__copy">
+        © {year} Miguel Cock. {copy.footer.rights}
+      </p>
+    </div>
+
+    <div>
+      <h2 class="footer__title">// {copy.footer.contact}</h2>
+      <div class="footer__links">
+        <a href={`mailto:${profile.email}`}>{profile.email}</a>
+        <button
+          class="copy-button"
+          type="button"
+          data-copy={profile.email}
+          aria-label={`${copy.common.copyEmail}: ${profile.email}`}
+        >
+          {copy.common.copyEmail}
+        </button>
+      </div>
+    </div>
+
+    <div>
+      <h2 class="footer__title">// {copy.footer.elsewhere}</h2>
+      <div class="footer__links">
+        <a href={profile.github} target="_blank" rel="noopener noreferrer">
+          GitHub <span aria-hidden="true">↗</span>
+        </a>
+        <a href={profile.linkedin} target="_blank" rel="noopener noreferrer">
+          LinkedIn <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,27 @@
+---
+import BlogPostPage from '../../components/pages/BlogPostPage.astro';
+import { getAlternatePost, getPosts, postPath } from '../../lib/blog';
+
+export async function getStaticPaths() {
+  const posts = await getPosts('en');
+  const paths = [];
+
+  for (const post of posts) {
+    const alternate = await getAlternatePost(post);
+    paths.push({
+      params: { slug: post.id.replace(/^en\//, '') },
+      props: {
+        post,
+        alternatePath: alternate ? postPath(alternate) : '/es/blog/',
+        hasTranslation: Boolean(alternate),
+      },
+    });
+  }
+
+  return paths;
+}
+
+const { post, alternatePath, hasTranslation } = Astro.props;
+---
+
+<BlogPostPage post={post} lang="en" alternatePath={alternatePath} hasTranslation={hasTranslation} />

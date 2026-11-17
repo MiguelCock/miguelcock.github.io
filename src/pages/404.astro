@@ -1,0 +1,95 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { profile } from '../data/profile';
+import { route } from '../i18n/ui';
+
+const copy = {
+  en: {
+    title: '404 — Miguel Cock',
+    description: 'This route does not exist.',
+    code: 'ERROR 404 · PAGE_NOT_FOUND',
+    heading: 'Segmentation fault',
+    body: 'This route does not exist. It may have moved, been deleted, or never been deployed.',
+    hint: 'Try one of these instead:',
+    home: 'Back to home',
+    projects: 'Projects',
+    blog: 'Blog',
+  },
+  es: {
+    title: '404 — Miguel Cock',
+    description: 'Esta ruta no existe.',
+    code: 'ERROR 404 · PÁGINA_NO_ENCONTRADA',
+    heading: 'Segmentation fault',
+    body: 'Esta ruta no existe. Puede que se haya movido, eliminado o que nunca se haya desplegado.',
+    hint: 'Prueba con una de estas:',
+    home: 'Volver al inicio',
+    projects: 'Proyectos',
+    blog: 'Blog',
+  },
+};
+---
+
+<BaseLayout lang="en" title={copy.en.title} description={copy.en.description} alternatePath="/es/">
+  <section class="notfound">
+    <div class="container">
+      <p class="notfound__code">{copy.en.code}</p>
+      <h1 class="notfound__title glitch" data-text="404">
+        404
+      </h1>
+
+      <p class="notfound__body">
+        <strong>{copy.en.heading} (core dumped).</strong>
+        {copy.en.body}
+      </p>
+      <p class="notfound__body" lang="es">
+        <strong>{copy.es.heading} (core dumped).</strong>
+        {copy.es.body}
+      </p>
+
+      <div class="terminal notfound__terminal">
+        <div class="terminal__bar">
+          <span class="terminal__dots" aria-hidden="true">
+            <i></i>
+            <i></i>
+            <i></i>
+          </span>
+          <span class="terminal__title">miguel@medellin: ~/lost</span>
+          <span class="terminal__dots" aria-hidden="true">
+            <i></i>
+            <i></i>
+            <i></i>
+          </span>
+        </div>
+        <div class="terminal__body">
+          <p>
+            <span class="prompt">miguel@medellin:~$</span> cd /this-page
+          </p>
+          <p class="is-error">cd: no such file or directory: /this-page</p>
+          <p>
+            <span class="prompt">miguel@medellin:~$</span> {copy.en.hint}
+          </p>
+          <p>cd /</p>
+          <p>cd /projects</p>
+          <p>cd /blog</p>
+          <p>mail miguel</p>
+          <p class="muted">{profile.email}</p>
+        </div>
+      </div>
+
+      <div class="notfound__actions">
+        <a class="btn btn--primary" href={route('en', 'home')}>
+          {copy.en.home}
+        </a>
+        <a class="btn" href={route('en', 'projects')}>
+          {copy.en.projects}
+        </a>
+        <a class="btn" href={route('en', 'blog')}>
+          {copy.en.blog}
+        </a>
+        <a class="btn" href="/es/" hreflang="es" lang="es">
+          Ir a español
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

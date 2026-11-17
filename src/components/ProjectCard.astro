@@ -1,0 +1,95 @@
+---
+import { Image } from 'astro:assets';
+import type { Project } from '../data/projects';
+import { t } from '../i18n/ui';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  project: Project;
+  lang: Lang;
+  index?: number;
+}
+
+const { project, lang, index = 0 } = Astro.props;
+const copy = t(lang);
+const repo = project.repo;
+---
+
+<article
+  class="project-card"
+  data-reveal
+  data-tags={project.tags.join(' ')}
+  style={`--accent: ${project.accent}; --i: ${index};`}
+>
+  <div class="project-card__bar">
+    <span class="terminal__dots" aria-hidden="true">
+      <i></i>
+      <i></i>
+      <i></i>
+    </span>
+    <span class="project-card__file">{project.slug}.md</span>
+    <span class="project-card__period">{project.period}</span>
+  </div>
+
+  <div class="project-card__body">
+    <div class="project-card__head">
+      <span class="project-card__glyph" aria-hidden="true">
+        {project.glyph}
+      </span>
+      <div>
+        <h3>
+          {repo ? (
+            <a href={repo} target="_blank" rel="noopener noreferrer">
+              {project.name}
+            </a>
+          ) : (
+            project.name
+          )}
+        </h3>
+        <p class="project-card__status">{project.status[lang]}</p>
+      </div>
+    </div>
+
+    {project.image ? (
+      <a
+        class="project-card__media"
+        href={repo}
+        target="_blank"
+        rel="noopener noreferrer"
+        tabindex="-1"
+        aria-hidden="true"
+      >
+        <Image
+          src={project.image}
+          alt={project.imageAlt?.[lang] ?? project.name}
+          widths={[480, 800]}
+          sizes="(max-width: 760px) 100vw, 50vw"
+          loading="lazy"
+        />
+      </a>
+    ) : (
+      <div class="project-card__media project-card__media--placeholder" aria-hidden="true">
+        <span class="project-card__placeholder-glyph">{project.glyph}</span>
+        <span class="project-card__placeholder-stack">{project.stack.slice(0, 3).join(' · ')}</span>
+        <span class="project-card__placeholder-prompt">$ ./run</span>
+      </div>
+    )}
+
+    <p class="project-card__tagline">{project.tagline[lang]}</p>
+    <p class="project-card__desc">{project.description[lang]}</p>
+
+    <ul class="tags" aria-label={copy.common.stack}>
+      {project.stack.map((item) => (
+        <li class="tag">{item}</li>
+      ))}
+    </ul>
+
+    {repo && (
+      <div class="project-card__links">
+        <a href={repo} target="_blank" rel="noopener noreferrer">
+          {copy.common.repo} <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    )}
+  </div>
+</article>

@@ -1,0 +1,79 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatDate, type BlogPost } from '../../lib/blog';
+import { route } from '../../i18n/ui';
+import type { Lang } from '../../i18n/ui';
+
+interface Props {
+  post: BlogPost;
+  lang: Lang;
+  alternatePath: string;
+  hasTranslation: boolean;
+}
+
+const { post, lang, alternatePath, hasTranslation } = Astro.props;
+const { Content } = await render(post);
+const blogRoute = route(lang, 'blog');
+
+const copy = {
+  en: {
+    back: '← All posts',
+    alternate: 'Leer en español',
+    tags: 'Tags',
+  },
+  es: {
+    back: '← Todas las entradas',
+    alternate: 'Read in English',
+    tags: 'Etiquetas',
+  },
+};
+
+const c = copy[lang];
+---
+
+<BaseLayout
+  lang={lang}
+  title={`${post.data.title} — Miguel Cock`}
+  description={post.data.description}
+  alternatePath={alternatePath}
+  type="article"
+  publishedTime={post.data.pubDate.toISOString()}
+>
+  <article class="post">
+    <div class="container">
+      <header class="post__header">
+        <p class="eyebrow">
+          <span class="eyebrow__mark">//</span>
+          blog · {formatDate(post.data.pubDate, lang)}
+        </p>
+        <h1 class="post__title">{post.data.title}</h1>
+        <p class="post__desc">{post.data.description}</p>
+        {post.data.tags.length > 0 && (
+          <div class="post__meta">
+            <span>
+              {c.tags}: {post.data.tags.join(' · ')}
+            </span>
+          </div>
+        )}
+      </header>
+
+      <div class="prose">
+        <Content />
+      </div>
+
+      <footer class="post__footer">
+        <a href={blogRoute}>{c.back}</a>
+        {hasTranslation ? (
+          <a href={alternatePath} hreflang={lang === 'en' ? 'es' : 'en'}>
+            {c.alternate} →
+          </a>
+        ) : (
+          <span class="muted">
+            {lang === 'en' ? 'Spanish version coming soon' : 'Versión en inglés próximamente'}
+          </span>
+        )}
+      </footer>
+    </div>
+  </article>
+</BaseLayout>

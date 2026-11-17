@@ -1,0 +1,90 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatDate, getPosts, postPath } from '../../lib/blog';
+import type { Lang } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const alternatePath = lang === 'en' ? '/es/blog/' : '/blog/';
+const posts = await getPosts(lang);
+
+const copy = {
+  en: {
+    title: 'Blog — Miguel Cock',
+    description:
+      'Notes on systems, security, accessibility and game development. Written in English and Spanish.',
+    eyebrow: 'blog',
+    heading: 'Notes from the terminal',
+    intro:
+      'Things I learn while building. Long enough to be useful, short enough to finish. Every post exists in English and Spanish.',
+    empty: 'The first post is still in the oven. Check back soon.',
+  },
+  es: {
+    title: 'Blog — Miguel Cock',
+    description:
+      'Notas sobre sistemas, seguridad, accesibilidad y desarrollo de videojuegos. Escritas en inglés y español.',
+    eyebrow: 'blog',
+    heading: 'Notas desde la terminal',
+    intro:
+      'Cosas que aprendo mientras construyo. Suficientemente largas para ser útiles, suficientemente cortas para terminar. Cada entrada existe en inglés y español.',
+    empty: 'La primera entrada todavía está en el horno. Vuelve pronto.',
+  },
+};
+
+const c = copy[lang];
+---
+
+<BaseLayout lang={lang} title={c.title} description={c.description} alternatePath={alternatePath}>
+  <section class="page-hero">
+    <div class="container">
+      <p class="eyebrow">
+        <span class="eyebrow__mark">//</span> {c.eyebrow}
+      </p>
+      <h1 class="page-hero__title">
+        {c.heading}
+        <span class="accent">.</span>
+      </h1>
+      <p class="page-hero__copy">{c.intro}</p>
+      <p class="page-hero__meta">
+        <span>
+          {posts.length} {lang === 'en' ? 'posts' : 'entradas'}
+        </span>
+        <span aria-hidden="true">·</span>
+        <span>EN / ES</span>
+      </p>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container">
+      {posts.length > 0 ? (
+        <div class="post-list">
+          {posts.map((post) => (
+            <a class="post-row" href={postPath(post)}>
+              <time class="post-row__date" datetime={post.data.pubDate.toISOString()}>
+                {formatDate(post.data.pubDate, lang)}
+              </time>
+              <div>
+                <h2 class="post-row__title">{post.data.title}</h2>
+                <p class="post-row__desc">{post.data.description}</p>
+                <ul class="tags" aria-label={lang === 'en' ? 'Tags' : 'Etiquetas'}>
+                  {post.data.tags.map((tag) => (
+                    <li class="tag">{tag}</li>
+                  ))}
+                </ul>
+              </div>
+              <span class="post-row__arrow" aria-hidden="true">
+                →
+              </span>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <p class="muted">{c.empty}</p>
+      )}
+    </div>
+  </section>
+</BaseLayout>

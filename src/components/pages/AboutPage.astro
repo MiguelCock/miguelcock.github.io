@@ -1,0 +1,254 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SectionHeading from '../SectionHeading.astro';
+import { profile } from '../../data/profile';
+import type { Lang } from '../../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const alternatePath = lang === 'en' ? '/es/sobre-mi/' : '/about/';
+
+const copy = {
+  en: {
+    title: 'About — Miguel Cock',
+    description:
+      'Systems engineer from EAFIT, cybersecurity engineer and full-stack developer at Exfil Security. Experience, education, skills and certifications.',
+    eyebrow: 'about',
+    heading: 'The person behind the prompt',
+    bio: [
+      `I studied Systems Engineering at EAFIT and stayed for a specialization in software development; I am now finishing a master's in engineering. Along the way I was a teaching assistant for calculus and mathematics, which is where I learned to explain complicated things without hiding the details.`,
+      `In January 2025 I joined Exfil Security, a US company, as a cybersecurity engineer and full-stack developer. I test software, build internal tools, and work in English every day. In 2026 I led the development of 4U for Universidad Icesi: a navigation app for blind users that corrects phone GPS with computer vision.`,
+      `Outside work I write C3 libraries, make small co-op games with LÖVE2D, and read language and graphics documentation for fun. I was part of Nova de Tecnología, EAFIT's student tech group, where I was Scrum Master for Lua Space.`,
+    ],
+    asideTitle: 'profile.json',
+    role: 'role',
+    location: 'location',
+    email: 'email',
+    links: 'links',
+    languages: 'languages',
+    status: 'status',
+    statusValue: 'Open to full-stack roles · Medellín',
+    experienceEyebrow: '01 · experience',
+    experienceTitle: 'Where I have worked',
+    educationEyebrow: '02 · education',
+    educationTitle: 'Where I studied',
+    skillsEyebrow: '03 · toolkit',
+    skillsTitle: 'What I work with',
+    credsEyebrow: '04 · credentials',
+    credsTitle: 'Certifications & languages',
+    award: 'Award',
+  },
+  es: {
+    title: 'Sobre mí — Miguel Cock',
+    description:
+      'Ingeniero de sistemas de EAFIT, ingeniero en ciberseguridad y desarrollador full stack en Exfil Security. Experiencia, educación, habilidades y certificaciones.',
+    eyebrow: 'sobre mí',
+    heading: 'La persona detrás del prompt',
+    bio: [
+      `Estudié Ingeniería en Sistemas en EAFIT y me quedé a hacer la especialización en desarrollo de software; ahora estoy terminando la maestría en ingeniería. En el camino fui monitor de cálculo y matemáticas, que es donde aprendí a explicar cosas complicadas sin esconder los detalles.`,
+      `En enero de 2025 me uní a Exfil Security, una empresa de Estados Unidos, como ingeniero en ciberseguridad y desarrollador full stack. Pruebo software, construyo herramientas internas y trabajo en inglés todos los días. En 2026 lideré el desarrollo de 4U para la Universidad Icesi: una app de navegación para personas ciegas que corrige el GPS del teléfono con visión por computador.`,
+      `Fuera del trabajo escribo librerías de C3, hago videojuegos cooperativos pequeños con LÖVE2D y leo documentación de lenguajes y gráficos por gusto. Hice parte de Nova de Tecnología, el grupo estudiantil de tecnología de EAFIT, donde fui Scrum Master de Lua Space.`,
+    ],
+    asideTitle: 'perfil.json',
+    role: 'rol',
+    location: 'ubicación',
+    email: 'correo',
+    links: 'enlaces',
+    languages: 'idiomas',
+    status: 'estado',
+    statusValue: 'Abierto a roles full stack · Medellín',
+    experienceEyebrow: '01 · experiencia',
+    experienceTitle: 'Dónde he trabajado',
+    educationEyebrow: '02 · educación',
+    educationTitle: 'Dónde estudié',
+    skillsEyebrow: '03 · caja de herramientas',
+    skillsTitle: 'Con qué trabajo',
+    credsEyebrow: '04 · credenciales',
+    credsTitle: 'Certificaciones e idiomas',
+    award: 'Premio',
+  },
+};
+
+const c = copy[lang];
+const langList = profile.languages
+  .map((item) => `${item.name[lang]} (${item.level[lang]})`)
+  .join(' · ');
+---
+
+<BaseLayout lang={lang} title={c.title} description={c.description} alternatePath={alternatePath}>
+  <section class="page-hero">
+    <div class="container">
+      <p class="eyebrow">
+        <span class="eyebrow__mark">//</span> {c.eyebrow}
+      </p>
+      <h1 class="page-hero__title">
+        {c.heading}
+        <span class="accent">.</span>
+      </h1>
+      <p class="page-hero__copy">{profile.summary[lang]}</p>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="container about-grid">
+      <div class="about-copy">
+        {c.bio.map((paragraph) => (
+          <p>{paragraph}</p>
+        ))}
+      </div>
+
+      <aside class="about-aside" aria-label={c.asideTitle}>
+        <div class="about-aside__bar">
+          <span class="terminal__dots" aria-hidden="true">
+            <i></i>
+            <i></i>
+            <i></i>
+          </span>
+          <span>{c.asideTitle}</span>
+        </div>
+        <div class="about-aside__body">
+          <div class="about-aside__row">
+            <span class="about-aside__key">{c.role}</span>
+            <span class="about-aside__value">{profile.role[lang]}</span>
+          </div>
+          <div class="about-aside__row">
+            <span class="about-aside__key">{c.location}</span>
+            <span class="about-aside__value">{profile.location[lang]}</span>
+          </div>
+          <div class="about-aside__row">
+            <span class="about-aside__key">{c.email}</span>
+            <span class="about-aside__value">
+              <a href={`mailto:${profile.email}`}>{profile.email}</a>
+            </span>
+          </div>
+          <div class="about-aside__row">
+            <span class="about-aside__key">{c.links}</span>
+            <span class="about-aside__value">
+              <a href={profile.github} target="_blank" rel="noopener noreferrer">
+                GitHub
+              </a>
+              {' · '}
+              <a href={profile.linkedin} target="_blank" rel="noopener noreferrer">
+                LinkedIn
+              </a>
+            </span>
+          </div>
+          <div class="about-aside__row">
+            <span class="about-aside__key">{c.languages}</span>
+            <span class="about-aside__value">{langList}</span>
+          </div>
+          <div class="about-aside__row">
+            <span class="about-aside__key">{c.status}</span>
+            <span class="about-aside__value accent">{c.statusValue}</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <SectionHeading eyebrow={c.experienceEyebrow} title={c.experienceTitle} />
+      <div class="timeline">
+        {profile.experience.map((job) => (
+          <article class="timeline__item" data-reveal>
+            <div>
+              <p class="timeline__period">{job.period[lang]}</p>
+              <p class="timeline__where">{job.location[lang]}</p>
+            </div>
+            <div>
+              <h3 class="timeline__role">{job.role[lang]}</h3>
+              <p class="timeline__company">@ {job.company}</p>
+              <p class="timeline__summary">{job.summary[lang]}</p>
+              <ul class="timeline__list">
+                {job.highlights[lang].map((item) => (
+                  <li>{item}</li>
+                ))}
+              </ul>
+              <ul class="tags timeline__stack" aria-label="Stack">
+                {job.stack.map((item) => (
+                  <li class="tag">{item}</li>
+                ))}
+              </ul>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <SectionHeading eyebrow={c.educationEyebrow} title={c.educationTitle} />
+      <div class="edu-grid">
+        {profile.education.map((item) => (
+          <article class="edu-card" data-reveal>
+            <p class="edu-card__school">{item.school}</p>
+            <h3 class="edu-card__degree">{item.degree[lang]}</h3>
+            <p class="edu-card__period">{item.period[lang]}</p>
+            {item.detail && <p class="edu-card__detail">{item.detail[lang]}</p>}
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <SectionHeading eyebrow={c.skillsEyebrow} title={c.skillsTitle} />
+      <div class="skills-grid">
+        {profile.skills.map((group) => (
+          <div class="skill-group" data-reveal>
+            <h3 class="skill-group__label">{group.label[lang]}</h3>
+            <div class="chips">
+              {group.items.map((item) => (
+                <span class="chip">{item}</span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <SectionHeading eyebrow={c.credsEyebrow} title={c.credsTitle} />
+      <div class="creds-grid">
+        {profile.certifications.map((cert) => (
+          <article class="cred-card" data-reveal>
+            <h3>{cert.issuer}</h3>
+            <ul>
+              {cert.items.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </article>
+        ))}
+        <article class="cred-card" data-reveal>
+          <h3>{lang === 'en' ? 'Languages' : 'Idiomas'}</h3>
+          <ul>
+            {profile.languages.map((item) => (
+              <li>
+                {item.name[lang]} — {item.level[lang]}
+              </li>
+            ))}
+          </ul>
+        </article>
+      </div>
+
+      <div class="award" style="margin-top: 16px;" data-reveal>
+        <span class="award__icon" aria-hidden="true">
+          ★
+        </span>
+        <div>
+          <h3>{profile.award.title[lang]}</h3>
+          <p>{profile.award.detail[lang]}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
