@@ -516,9 +516,11 @@ hr {
 
 .hero__cursor {
   display: inline-block;
-  margin-left: 6px;
-  color: var(--green);
-  font-weight: 400;
+  width: 0.52em;
+  height: 0.11em;
+  margin-left: 0.09em;
+  background: var(--green);
+  vertical-align: baseline;
   animation: blink 1.1s steps(1) infinite;
 }
 
